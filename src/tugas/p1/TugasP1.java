@@ -5,65 +5,55 @@ package tugas.p1;
  * @author ASUS
  */
 
-
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.util.Random;
 
 public class TugasP1 {
-    private int angkaRahasia;
-    private int percobaan;
-    private JTextField inputField;
-    private JLabel messageLabel;
-
+    private JFrame frame = new JFrame("Game Ikuti Instruksi");
+    private JLabel instructionLabel = new JLabel("Tekan tombol yang benar!", SwingConstants.CENTER);
+    private JLabel scoreLabel = new JLabel("Skor: 0", SwingConstants.CENTER);
+    private char currentKey;
+    private int score = 0;
+    private Random random = new Random();
+    
     public TugasP1() {
-        angkaRahasia = new Random().nextInt(100) + 1;
-        percobaan = 0;
-
-        JFrame frame = new JFrame("Game Tebak Angka");
-        frame.setSize(400, 200);
+        frame.setSize(300, 200);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLayout(new FlowLayout());
-
-        JLabel label = new JLabel("Tebak angka antara 1 - 100:");
-        inputField = new JTextField(5);
-        JButton tebakButton = new JButton("Tebak");
-        messageLabel = new JLabel("Masukkan tebakan Anda");
-
-        tebakButton.addActionListener(new ActionListener() {
+        frame.setLayout(null);
+        
+        instructionLabel.setBounds(50, 50, 200, 30);
+        scoreLabel.setBounds(50, 90, 200, 30);
+        
+        frame.add(instructionLabel);
+        frame.add(scoreLabel);
+        
+        frame.addKeyListener(new KeyAdapter() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                cekTebakan();
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyChar() == currentKey) {
+                    score++;
+                    scoreLabel.setText("Skor: " + score);
+                    generateNewInstruction();
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Salah! Skor akhir: " + score);
+                    score = 0;
+                    scoreLabel.setText("Skor: 0");
+                    generateNewInstruction();
+                }
             }
         });
-
-        frame.add(label);
-        frame.add(inputField);
-        frame.add(tebakButton);
-        frame.add(messageLabel);
-
+        
+        frame.setFocusable(true);
         frame.setVisible(true);
+        generateNewInstruction();
     }
-
-    private void cekTebakan() {
-        try {
-            int tebakan = Integer.parseInt(inputField.getText());
-            percobaan++;
-
-            if (tebakan > angkaRahasia) {
-                messageLabel.setText("Terlalu besar! Coba lagi.");
-            } else if (tebakan < angkaRahasia) {
-                messageLabel.setText("Terlalu kecil! Coba lagi.");
-            } else {
-                messageLabel.setText("Selamat! Anda benar dalam " + percobaan + " percobaan.");
-            }
-        } catch (NumberFormatException e) {
-            messageLabel.setText("Masukkan angka yang valid!");
-        }
+    
+    private void generateNewInstruction() {
+        currentKey = (char) ('A' + random.nextInt(26)); // Random huruf A-Z
+        instructionLabel.setText("Tekan huruf: " + currentKey);
     }
-
+    
     public static void main(String[] args) {
         new TugasP1();
     }
